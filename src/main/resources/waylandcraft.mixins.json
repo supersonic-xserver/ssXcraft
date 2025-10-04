@@ -3,6 +3,7 @@
 	"package": "dev.evvie.waylandcraft.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+		"GameRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
