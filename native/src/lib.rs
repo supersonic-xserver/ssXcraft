@@ -34,6 +34,13 @@ use smithay::{
             XdgShellState, XdgShellHandler, ToplevelSurface, PopupSurface,
             PositionerState
         },
+        selection::{
+            data_device::{
+                DataDeviceState, DataDeviceHandler, ClientDndGrabHandler,
+                ServerDndGrabHandler,
+            },
+            SelectionHandler,
+        },
     },
     output::{self, Output, PhysicalProperties, Subpixel},
     input::{
@@ -42,7 +49,7 @@ use smithay::{
     },
     utils::Serial,
     delegate_compositor, delegate_shm, delegate_output, delegate_seat,
-    delegate_xdg_shell,
+    delegate_xdg_shell, delegate_data_device,
 };
 
 mod bridge;
@@ -60,6 +67,7 @@ pub(crate) struct WLCState {
     pub shm_state: ShmState,
     pub seat_state: SeatState<Self>,
     pub xdg_state: XdgShellState,
+    pub data_device_state: DataDeviceState,
     pub seat: Seat<Self>,
 }
 
@@ -76,6 +84,8 @@ impl WLCState {
 
         let xdg_state = XdgShellState::new::<WLCState>(&disp);
 
+        let data_device_state = DataDeviceState::new::<WLCState>(&disp);
+
         Self {
             display_handle: disp.clone(),
             socket: OsString::new(),
@@ -83,6 +93,7 @@ impl WLCState {
             shm_state,
             seat_state,
             xdg_state,
+            data_device_state,
             seat,
         }
     }
@@ -155,6 +166,19 @@ impl XdgShellHandler for WLCState {
     ) {
     }
 }
+
+impl DataDeviceHandler for WLCState {
+    fn data_device_state(&self) -> &DataDeviceState {
+        &self.data_device_state
+    }
+}
+
+impl SelectionHandler for WLCState {
+    type SelectionUserData = ();
+}
+
+impl ClientDndGrabHandler for WLCState {}
+impl ServerDndGrabHandler for WLCState {}
 
 pub(crate) struct WLCClient {
     compositor_state: CompositorClientState,
@@ -279,3 +303,4 @@ delegate_shm!(WLCState);
 delegate_output!(WLCState);
 delegate_seat!(WLCState);
 delegate_xdg_shell!(WLCState);
+delegate_data_device!(WLCState);
