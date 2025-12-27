@@ -194,13 +194,6 @@ public class XDGDesktopManager {
 				.toList();
 		iconDirs.addAll(xdgIcons);
 		
-		// Add all of the $XDG_DATA_DIRS/icons to index all possible themes
-		// Or for the very special applications that decide to put their icons directly in the folder
-		List<File> xdgIconsAny = Arrays.stream(dataDirs)
-				.map((f) -> new File(f, "icons"))
-				.toList();
-		iconDirs.addAll(xdgIconsAny);
-		
 		// Add the /usr/share/pixmaps directory
 		iconDirs.add(new File("/usr/share/pixmaps"));
 		
