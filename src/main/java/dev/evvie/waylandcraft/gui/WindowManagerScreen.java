@@ -49,10 +49,8 @@ public class WindowManagerScreen extends Screen {
 	
 	private boolean resizeMode = false;
 	private WLCToplevel resizeToplevel = null;
-	private double resizeInitialX = -1;
-	private double resizeInitialY = -1;
-	private int resizeInitialWidth = -1;
-	private int resizeInitialHeight = -1;
+	private double resizeLastX = Double.NaN;
+	private double resizeLastY = Double.NaN;
 	private int resizeWidth = -1;
 	private int resizeHeight = -1;
 	
@@ -121,15 +119,16 @@ public class WindowManagerScreen extends Screen {
 		
 		resizeMode = true;
 		resizeToplevel = focused;
-		resizeInitialWidth = resizeWidth = focused.geometry.width();
-		resizeInitialHeight = resizeHeight = focused.geometry.height();
-		resizeInitialX = resizeInitialY = -1;
+		resizeWidth = focused.geometry.width();
+		resizeHeight = focused.geometry.height();
+		resizeLastX = resizeLastY = Double.NaN;
 	}
 	
 	private void exitResizeMode() {
 		wlc.bridge.resizeToplevelInteractiveStop(resizeToplevel, resizeWidth, resizeHeight);
 		
 		GLFW.glfwSetInputMode(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+		
 		resizeMode = false;
 		resizeToplevel = null;
 	}
@@ -236,16 +235,18 @@ public class WindowManagerScreen extends Screen {
 				return;
 			}
 			
-			if(resizeInitialX < 0 || resizeInitialY < 0) {
-				resizeInitialX = x;
-				resizeInitialY = y;
+			if(Double.isNaN(resizeLastX) || Double.isNaN(resizeLastY)) {
+				resizeLastX = x;
+				resizeLastY = y;
 			}
 			
-			int dx = (int) ((x - resizeInitialX) * scale) / 2;
-			int dy = (int) ((y - resizeInitialY) * scale) / 2;
+			int dx = (int) ((x - resizeLastX) * scale) / 2;
+			int dy = (int) ((y - resizeLastY) * scale) / 2;
+			resizeLastX = x;
+			resizeLastY = y;
 			
-			resizeWidth = resizeInitialWidth + dx;
-			resizeHeight = resizeInitialHeight + dy;
+			resizeWidth += dx;
+			resizeHeight += dy;
 			
 			resizeWidth = Math.clamp(resizeWidth, 0, 1920);
 			resizeHeight = Math.clamp(resizeHeight, 0, 1080);
