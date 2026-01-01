@@ -309,12 +309,12 @@ public class WaylandCraft implements ModInitializer, ClientModInitializer {
 			return;
 		}
 		
-		if(hitResult == null || hitResult.dist < 0) {
+		WLCToplevel focused = bridge.getMostRecentFocus();
+		if(focused == null || !hasWindowFor(focused)) {
 			keyboardCaptured = false;
 			return;
 		}
 		
-		if(hitResult.target.backing instanceof WLCToplevel) bridge.focusSurface((WLCToplevel) hitResult.target.backing);
 		keyboardCaptured = !keyboardCaptured;
 	}
 	
