@@ -50,6 +50,8 @@ pub struct WLCPointerData {
     // WlSurface holding pointer focus
     // This surface has to be of the same client as the WlPointer
     focus: Option<WlSurface>,
+    // Value of last motion event wl_fixed
+    last_motion: Option<(i32, i32)>,
     // Relative pointer objects
     relative_pointers: Vec<ZwpRelativePointerV1>,
     // Pointer position lock
@@ -100,6 +102,14 @@ fn with_keyboard_data<F>(keyboard: &WlKeyboard, f: F)
 
 fn new_serial() -> u32 {
     SERIAL_COUNTER.next_serial().into()
+}
+
+fn to_fixed(v: f64) -> i32 {
+    (v * 256.0) as i32
+}
+
+fn to_fixed2(v1: f64, v2: f64) -> (i32, i32) {
+    (to_fixed(v1), to_fixed(v2))
 }
 
 impl WLCSeatState {
@@ -171,6 +181,7 @@ impl WLCSeatState {
                 pointer.leave(serial, focus);
                 self.pointer_frame(pointer);
                 data.focus = None;
+                data.last_motion = None;
             }
         });
 
@@ -191,6 +202,7 @@ impl WLCSeatState {
             pointer.enter(serial, surface, x, y);
             self.pointer_frame(pointer);
             data.focus = Some(surface.clone());
+            data.last_motion = None;
         });
     }
 
@@ -209,19 +221,19 @@ impl WLCSeatState {
         self.pointer_motion(x, y);
     }
 
+    // Send motion events
     pub fn pointer_motion(&mut self, x: f64, y: f64) {
-        // Send motion events
+        let time = get_time();
+        let pos: (i32, i32) = to_fixed2(x, y);
         self.for_all_pointers(|pointer, data| {
-            // Remove pointer focus when the surface isn't alive anymore
-            if data.focus.as_ref().is_some_and(|s| !s.is_alive()) {
-                data.focus = None;
-            }
-
             // Pointer does not hold focus
             if !data.focus.is_some() { return }
+            // Pointer location did not change
+            if data.last_motion == Some(pos) { return }
 
-            pointer.motion(get_time(), x, y);
+            pointer.motion(time, x, y);
             self.pointer_frame(pointer);
+            data.last_motion = Some(pos);
         });
     }
 
@@ -485,6 +497,7 @@ impl Dispatch<WlSeat, ()> for WLCState {
             wl_seat::Request::GetPointer { id } => {
                 let pointer_data = WLCPointerData {
                     focus: None,
+                    last_motion: None,
                     relative_pointers: vec![],
                     lock: None,
                     confined: None,
