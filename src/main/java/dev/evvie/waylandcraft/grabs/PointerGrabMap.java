@@ -34,14 +34,14 @@ public class PointerGrabMap {
 	}
 	
 	// Start implicit pointer grab on a surface. Surface MUST have active pointer focus!
-	public void startImplicit(WindowDisplay window, WLCSurface surface, int button) {
+	public void startImplicit(DisplayHitResult hitResult, int button) {
 		if(isExclusiveGrabActive()) return;
 		
-		if(implicitGrabs == null) implicitGrabs = new ImplicitGrabs(window, surface);
+		if(implicitGrabs == null) implicitGrabs = new ImplicitGrabs(hitResult);
 		if(implicitGrabs.contains(button)) return;
 		
 		int serial = wlc.bridge.sendButton(0x110 + button, 1);
-		implicitGrabs.add(window, surface, button, serial);
+		implicitGrabs.add(button, serial);
 	}
 	
 	public void startExclusive(PointerGrab grab) {
@@ -70,8 +70,6 @@ public class PointerGrabMap {
 		}
 		
 		if(implicitGrabs == null) return;
-		
-		implicitGrabs.updateMoveWorld(pos, view, up);
 		
 		DisplayHitResult hitResult = implicitGrabs.window.intersect(pos, view);
 		if(hitResult == null) return;
@@ -133,16 +131,18 @@ public class PointerGrabMap {
 		exclusiveGrab = null;
 	}
 	
-	public @Nullable ReleasedImplicitGrab releaseImplicitMatching(int serial) {
+	/* Drop an active implicit pointer grab that matches the given serial.
+	 * This method is supposed to be used to upgrade implicit grabs to exclusive ones.
+	 * A button release event is not forwarded to the client.
+	 */
+	public @Nullable ImplicitGrab dropImplicitMatching(int serial) {
 		if(isExclusiveGrabActive()) return null;
 		if(implicitGrabs == null) return null;
-		if(implicitGrabs.lastMoveEvent == null) return null;
 		
-		for(ImplicitGrab implicit : implicitGrabs.entries) {
-			if(implicit.serial == serial) {
-				MoveWorldEvent lastMoveEvent = implicitGrabs.lastMoveEvent;
-				release(implicit.button); // Warning: Could set implicitGrabs to null
-				return new ReleasedImplicitGrab(implicit, lastMoveEvent);
+		for(ImplicitGrab implicitGrab : implicitGrabs.entries) {
+			if(implicitGrab.serial == serial) {
+				implicitGrabs.remove(implicitGrab.button); // Warning: Could set implicitGrabs to null
+				return implicitGrab;
 			}
 		}
 		return null;
@@ -152,12 +152,15 @@ public class PointerGrabMap {
 		
 		public final WindowDisplay window;
 		public final WLCSurface surface;
+		public final Vec3 startWorldPos;
+		public final Vec3 startSurfaceLocal;
 		public ArrayList<ImplicitGrab> entries = new ArrayList<ImplicitGrab>();
-		public MoveWorldEvent lastMoveEvent = null;
 		
-		public ImplicitGrabs(WindowDisplay window, WLCSurface surface) {
-			this.window = window;
-			this.surface = surface;
+		public ImplicitGrabs(DisplayHitResult hitResult) {
+			this.window = hitResult.target;
+			this.surface = hitResult.surface;
+			this.startWorldPos = hitResult.position;
+			this.startSurfaceLocal = hitResult.surfaceLocalOrigin;
 		}
 		
 		public boolean contains(int button) {
@@ -168,9 +171,9 @@ public class PointerGrabMap {
 			return entries.isEmpty();
 		}
 		
-		public void add(WindowDisplay display, WLCSurface surface, int button, int serial) {
+		public void add(int button, int serial) {
 			assert !contains(button);
-			entries.add(new ImplicitGrab(display, surface, button, serial));
+			entries.add(new ImplicitGrab(window, surface, button, serial, startWorldPos, startSurfaceLocal));
 		}
 		
 		public void remove(int button) {
@@ -178,19 +181,9 @@ public class PointerGrabMap {
 			entries.removeIf((press) -> press.button == button);
 		}
 		
-		public void updateMoveWorld(Vec3 pos, Vec3 view, Vec3 up) {
-			this.lastMoveEvent = new MoveWorldEvent(pos, view, up);
-		}
-		
 	}
 	
 	// Not a real pointer grab, just a way to represent active button presses on a WindowDisplay
-	private static record ImplicitGrab(WindowDisplay window, WLCSurface surface, int button, int serial) {}
-	public static record MoveWorldEvent(Vec3 pos, Vec3 view, Vec3 up) {}
-	public static record ReleasedImplicitGrab(WindowDisplay window, WLCSurface surface, MoveWorldEvent lastMoveEvent, int button, int serial) {
-		protected ReleasedImplicitGrab(ImplicitGrab implicitGrab, MoveWorldEvent lastMoveEvent) {
-			this(implicitGrab.window(), implicitGrab.surface(), lastMoveEvent, implicitGrab.button(), implicitGrab.serial());
-		}
-	}
+	public static record ImplicitGrab(WindowDisplay window, WLCSurface surface, int button, int serial, Vec3 startWorldPos, Vec3 startSurfaceLocal) {}
 	
 }

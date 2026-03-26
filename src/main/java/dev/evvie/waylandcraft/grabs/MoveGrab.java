@@ -4,28 +4,22 @@ import dev.evvie.waylandcraft.WindowDisplay;
 import dev.evvie.waylandcraft.WindowDisplay.DisplayHitResult;
 import dev.evvie.waylandcraft.bridge.WLCAbstractWindow;
 import dev.evvie.waylandcraft.bridge.WLCSurface;
-import dev.evvie.waylandcraft.grabs.PointerGrabMap.MoveWorldEvent;
-import dev.evvie.waylandcraft.grabs.PointerGrabMap.ReleasedImplicitGrab;
+import dev.evvie.waylandcraft.grabs.PointerGrabMap.ImplicitGrab;
 import net.minecraft.world.phys.Vec3;
 
 public class MoveGrab extends PointerGrab {
 	
 	private final WindowDisplay window;
-	private final MoveWorldEvent firstWorld;
 	private Vec3 initialSurfaceLocal = null;
 	
-	public MoveGrab(ReleasedImplicitGrab implicit) {
+	public MoveGrab(ImplicitGrab implicit) {
 		super(implicit.button());
 		this.window = implicit.window();
-		this.firstWorld = implicit.lastMoveEvent();
+		this.initialSurfaceLocal = implicit.startSurfaceLocal();
 	}
 	
 	@Override
 	public void init() throws GrabDroppedException {
-		DisplayHitResult hitResult = window.intersect(firstWorld.pos(), firstWorld.view());
-		if(hitResult == null) return;
-		
-		this.initialSurfaceLocal = hitResult.surfaceLocalOrigin;
 	}
 	
 	@Override

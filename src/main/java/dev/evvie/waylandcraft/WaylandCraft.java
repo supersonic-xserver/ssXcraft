@@ -21,7 +21,7 @@ import dev.evvie.waylandcraft.bridge.WaylandCraftBridge;
 import dev.evvie.waylandcraft.bridge.WaylandCraftBridge.Size;
 import dev.evvie.waylandcraft.grabs.MoveGrab;
 import dev.evvie.waylandcraft.grabs.PointerGrabMap;
-import dev.evvie.waylandcraft.grabs.PointerGrabMap.ReleasedImplicitGrab;
+import dev.evvie.waylandcraft.grabs.PointerGrabMap.ImplicitGrab;
 import dev.evvie.waylandcraft.gui.WaylandHudRenderer;
 import dev.evvie.waylandcraft.gui.WindowManagerScreen;
 import dev.evvie.waylandcraft.item.WindowItem;
@@ -274,7 +274,7 @@ public class WaylandCraft implements ModInitializer, ClientModInitializer {
 		
 		Integer moveRequest = bridge.checkMoveRequest();
 		if(moveRequest != null) {
-			ReleasedImplicitGrab implicit = pointerGrabs.releaseImplicitMatching(moveRequest.intValue());
+			ImplicitGrab implicit = pointerGrabs.dropImplicitMatching(moveRequest.intValue());
 			if(implicit != null) {
 				// The serial matched an active implicit grab
 				pointerGrabs.startExclusive(new MoveGrab(implicit));
@@ -444,7 +444,7 @@ public class WaylandCraft implements ModInitializer, ClientModInitializer {
 		if(action == 1 && hoveredDisplay != null && !pointerGrabs.isGrabActive(button)) {
 			if(hoveredDisplay.dist >= 0) {
 				WLCAbstractWindow window = hoveredDisplay.target.window;
-				pointerGrabs.startImplicit(hoveredDisplay.target, hoveredDisplay.surface, button);
+				pointerGrabs.startImplicit(hoveredDisplay, button);
 				
 				if(window instanceof WLCToplevel) bridge.focusSurface((WLCToplevel) window);
 			}
