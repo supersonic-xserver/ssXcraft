@@ -221,8 +221,7 @@ impl EGLHelper {
 
     pub fn query_dmabuf_formats(&self) -> Vec<Format> {
         let codes = self.query_dmabuf_format_codes();
-
-        println!("Supported dmabuf formats: {:?}", codes);
+        //println!("Supported dmabuf formats: {:?}", codes);
 
         let mut formats: Vec<Format> = codes
             .iter()
@@ -231,7 +230,7 @@ impl EGLHelper {
 
         codes.iter().for_each(|&c| {
             let modifiers = self.query_dmabuf_format_modifiers(c);
-            println!("\t{} modifiers: {:?}", c, modifiers);
+            //println!("\t{} modifiers: {:?}", c, modifiers);
 
             let f = modifiers
                 .into_iter()

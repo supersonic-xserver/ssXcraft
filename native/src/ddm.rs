@@ -110,7 +110,6 @@ impl WLCDataState {
                 continue;
             }
 
-            println!("Sending clipboard!");
             if let Some(clipboard) = &self.clipboard {
                 let offer_data = WLCDataOfferData {
                     source: clipboard.clone(),
@@ -243,8 +242,6 @@ impl Dispatch<WlDataDevice, WLCDataDevice> for WLCState {
                     let mime = with_source_data(source, |data| {
                         data.mime.clone()
                     });
-
-                    println!("New clipboard data: {:?}", mime);
 
                     // STOP SENDING ME EMPTY CLIPBOARD SELECTIONS WITH THE
                     // SAVE_TARGETS MIME. I HAVE NO CLUE WHAT THAT IS.
