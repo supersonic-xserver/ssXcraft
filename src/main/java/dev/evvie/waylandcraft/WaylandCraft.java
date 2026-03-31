@@ -555,6 +555,13 @@ public class WaylandCraft implements ModInitializer, ClientModInitializer {
 		return true;
 	}
 	
+	public static int correctScancode(int scancode) {
+		if(GLFW.glfwGetPlatform() == GLFW.GLFW_PLATFORM_WAYLAND) {
+			scancode += 8;
+		}
+		return scancode;
+	}
+	
 	private void anchorToParent(WLCPopup popup) {
 		WindowDisplay window = displays.stream().filter((w) -> w.window == popup).findAny().orElse(null);
 		WindowDisplay parent = displays.stream().filter((w) -> w.window == popup.getParent()).findAny().orElse(null);

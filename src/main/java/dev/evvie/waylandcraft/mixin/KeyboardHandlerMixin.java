@@ -15,6 +15,8 @@ public class KeyboardHandlerMixin {
 	
 	@Inject(method = "keyPress", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/InputConstants;isKeyDown(JI)Z", ordinal = 0), cancellable = true)
 	public void onPressInGame(long windowHandle, int key, int scancode, int action, int modifiers, CallbackInfo info) {
+		scancode = WaylandCraft.correctScancode(scancode);
+		
 		if(Minecraft.getInstance().level == null) return;
 		if(Minecraft.getInstance().screen != null) return;
 		
@@ -23,8 +25,11 @@ public class KeyboardHandlerMixin {
 	
 	@Inject(method = "keyPress", at = @At("HEAD"), cancellable = false)
 	public void onPressGlobal(long windowHandle, int key, int scancode, int action, int modifiers, CallbackInfo info) {
+		scancode = WaylandCraft.correctScancode(scancode);
+		
 		if(action != GLFW.GLFW_PRESS && action != GLFW.GLFW_RELEASE) return;
 		if(WaylandCraft.instance.bridge == null) return;
+		
 		WaylandCraft.instance.bridge.internalKeyUpdate(scancode, action == GLFW.GLFW_PRESS);
 	}
 	

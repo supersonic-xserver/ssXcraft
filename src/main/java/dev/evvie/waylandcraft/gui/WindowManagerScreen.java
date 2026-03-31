@@ -481,6 +481,7 @@ public class WindowManagerScreen extends Screen {
 		
 		// Forward key press to current window
 		if(focused != null) {
+			scancode = WaylandCraft.correctScancode(scancode);
 			wlc.bridge.pressKey(scancode);
 			return true;
 		}
@@ -495,6 +496,7 @@ public class WindowManagerScreen extends Screen {
 		if(super.keyReleased(key, scancode, modifiers)) return true;
 		
 		if(focused != null) {
+			scancode = WaylandCraft.correctScancode(scancode);
 			wlc.bridge.releaseKey(scancode);
 			return true;
 		}
