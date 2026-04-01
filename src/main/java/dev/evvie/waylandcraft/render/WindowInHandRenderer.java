@@ -52,15 +52,39 @@ public class WindowInHandRenderer {
 		if(toplevel == null) return;
 		if(toplevel.framebuffer == null) return;
 		
-		int width = toplevel.geometry.width();
-		int height = toplevel.geometry.height();
+		float width = toplevel.geometry.width();
+		float height = toplevel.geometry.height();
 		
-		Size outputSize = WaylandCraft.instance.bridge.getOutputSize();
-		float scale = 0.82f / Math.max(outputSize.width(), outputSize.height());
+		Size size = WaylandCraft.instance.bridge.getOutputSize();
+		float sWidth = size.width();
+		float sHeight = size.height();
+		
+		float wscale;
+		float hscale;
+		
+		/* The following math was established entirely through the use of intuitive guesswork and brute force.*/
+		/* It does not work when the game is running at an aspect ratio < 1, but who's weird enough play like that? */
+		
+		float relW = (width / height) / (sWidth / sHeight);
+		
+		// window aspect ratio lesser than screen aspect ratio
+		if(relW <= 1) {
+			wscale = width / height;
+			hscale = 1.0f;
+			
+			wscale /= (sWidth / sHeight);
+			hscale /= (sWidth / sHeight);
+		}
+		else {
+			wscale = 1.0f;
+			hscale = height / width;
+		}
+		
+		float scale = 0.6f;
 		
 		poseStack.scale(scale, scale, 1);
-		poseStack.translate(-width / 2 * sideMult, height / 2, 0);
-		poseStack.scale(width, height, 1);
+		poseStack.translate(-wscale / 2 * sideMult, hscale / 2, 0);
+		poseStack.scale(wscale, hscale, 1);
 		poseStack.translate(-0.5, -0.5, 0);
 		
 		Vec3 pos1 = new Vec3(0, 1, 0);
