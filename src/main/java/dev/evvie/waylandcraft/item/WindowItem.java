@@ -9,7 +9,6 @@ import com.mojang.serialization.Codec;
 import dev.evvie.waylandcraft.WaylandCraft;
 import dev.evvie.waylandcraft.bridge.WLCToplevel;
 import dev.evvie.waylandcraft.desktop.DesktopEntry;
-import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
@@ -35,20 +34,10 @@ public class WindowItem extends Item {
 	public static DataComponentType<Long> WINDOW_HANDLE;
 	public static Component BROKEN_WINDOW_TEXT = Component.literal("Broken Window");
 	public static Component UNKNOWN_WINDOW_TEXT = Component.literal("Unknown Window");
-	public static final ResourceLocation BROKEN_WINDOW_MODEL = ResourceLocation.fromNamespaceAndPath(WaylandCraft.MOD_ID, "item/broken_window");
 	
 	public static void register() {
 		WINDOW = Registry.register(BuiltInRegistries.ITEM, WINDOW_RESOURCE_KEY, new WindowItem());
 		WINDOW_HANDLE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(WaylandCraft.MOD_ID, "window_handle"), DataComponentType.<Long>builder().persistent(Codec.LONG).build());
-		
-		ModelLoadingPlugin.register(new ModelLoadingPlugin() {
-			
-			@Override
-			public void initialize(Context pluginContext) {
-				pluginContext.addModels(BROKEN_WINDOW_MODEL);
-			}
-			
-		});
 	}
 	
 	public WindowItem() {

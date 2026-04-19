@@ -34,6 +34,7 @@ import dev.evvie.waylandcraft.item.WindowItemManager;
 import dev.evvie.waylandcraft.render.RenderUtils;
 import dev.evvie.waylandcraft.render.WindowInHandRenderer;
 import dev.evvie.waylandcraft.render.WindowInItemFrameRenderer;
+import dev.evvie.waylandcraft.render.WindowItemModel;
 import dev.evvie.waylandcraft.settings.WaylandCraftSettingsManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
@@ -119,6 +120,7 @@ public class WaylandCraft implements ModInitializer, ClientModInitializer {
 		ClientPlayConnectionEvents.JOIN.register(this::onClientJoin);
 		
 		RenderUtils.registerShaders();
+		WindowItemModel.register();
 	}
 	
 	/* Update bridge and clients. May be called at any state of the game, even outside of a level
