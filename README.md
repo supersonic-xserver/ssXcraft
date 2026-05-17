@@ -18,6 +18,9 @@ This compiles the native code and puts the shared library into `native/target/de
 From here you can just return to the main directory and then run `./gradlew build` to produce the jar file
 in `build/libs/` or run `./gradlew runClient` to run it in a development environment.
 
+## Images
+![screenshot](/assets/screenshot.png)
+
 ## Disclaimer
 This compositor still has lots of issues and bugs. Use it at your own risk or whatever.
 
