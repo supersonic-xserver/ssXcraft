@@ -1,0 +1,23 @@
+modLoader="javafml"
+loaderVersion="[25,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="ssxcraft"
+version="1.0.0"
+displayName="ssXcraft"
+description="Pure Java 25 XCB-based window compositor for Minecraft"
+authors="supersonic-xserver"
+homepage="https://github.com/supersonic-xserver/ssXcraft"
+
+[[dependencies.ssxcraft]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.21.3,1.22)"
+ordering="NONE"
+
+[[dependencies.ssxcraft]]
+modId="neoforge"
+mandatory=true
+versionRange="[21.3.0,)"
+ordering="NONE"
