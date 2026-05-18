@@ -43,6 +43,9 @@ processResources {
 }
 
 java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(project.java_toolchain_version.toInteger())
+	}
 	withSourcesJar()
 
 	sourceCompatibility = JavaVersion.VERSION_${project.java_version}

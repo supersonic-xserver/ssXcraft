@@ -1,0 +1,32 @@
+name: NeoForge ssXcraft CI Build
+
+on:
+  push:
+    branches: [ "main", "master", "dev" ]
+  pull_request:
+    branches: [ "main", "master", "dev" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: Set Up Java 25 Development Environment
+      uses: actions/setup-java@v4
+      with:
+        java-version: '25'
+        distribution: 'temurin'
+
+    - name: Setup Gradle Cache and Environment
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: wrapper
+
+    - name: Grant Execute Permissions to Gradle Wrapper
+      run: chmod +x gradlew
+
+    - name: Compile Mod and Assembly Artifacts
+      run: ./gradlew build --no-daemon
