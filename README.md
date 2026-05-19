@@ -1,6 +1,6 @@
 # ssXcraft
 
-A zero-latency, pure Java 25 + NeoForge + XCB implementation for running a Wayland compositor inside Minecraft 1.21.3.
+A zero-latency, pure Java 25 + NeoForge + XCB implementation for running a XCB compositor inside Minecraft 1.21.3.
 
 ![ssXcraft banner](/assets/title_scaled.png)
 
