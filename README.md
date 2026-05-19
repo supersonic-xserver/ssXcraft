@@ -2,8 +2,6 @@
 
 A zero-latency, pure Java 25 + NeoForge + XCB implementation for running a XCB compositor inside Minecraft 1.21.3.
 
-![ssXcraft banner](/assets/title_scaled.png)
-
 ## Architectural Overview
 
 ### The Problem: Legacy Wayland Compositor Lag
