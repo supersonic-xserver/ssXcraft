@@ -147,4 +147,4 @@ This implementation is in active development. Use at your own risk.
 
 ---
 
-*The entire project was written without the usage of any generative AI.*
+*The entire project was written without the usage of any generative AI.* AI assisted PR is allowed just mark it.
